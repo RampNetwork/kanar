@@ -1,0 +1,15 @@
+{
+  "name": "clicop",
+  "version": "1.0.0",
+  "description": "Action that enforces pinning ClickUp ticket id reference in a PR using DangerJS",
+  "main": "dangerfile.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "axios": "^1.6.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
