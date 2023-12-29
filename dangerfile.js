@@ -80,7 +80,7 @@ const checkAndUpdateClickupIssues = () => {
   if (tasks.length === 0) {
     fail(
       '<b>Please add the ClickUp issue key to the PR e.g.: #28zfr1a or #DATAENG-98</b>\n' +
-      '(remember to add hash and wrap it in square brackets)\n\n' +
+      '(remember to add hash)\n\n' +
       '<i>You can find ticket key eg. in the last part of URL when ticket is viewed in the browser eg.:\n' +
       'URL: https://app.clickup.com/t/28zfr1a -> ticket issue key: 28zfr1a -> what should be added to PR: #28zfr1a\n' +
       'URL: https://app.clickup.com/t/24301226/DATAENG-98 -> ticket issue key: DATAENG-98 -> what should be added to PR: #DATAENG-98\n\n' +
