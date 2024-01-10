@@ -74,7 +74,7 @@ const parallelRequests = (tasks = [], req) => {
 };
 
 const checkAndUpdateClickupIssues = () => {
-  const source = [danger.github.pr.title, danger.github.pr.body].join();
+  const source = [danger.github.pr.title, danger.github.pr.body].join(' ');
   const tasks = getTasks(source);
 
   if (tasks.length === 0) {
