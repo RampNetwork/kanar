@@ -15,17 +15,20 @@ const clickupRequest = async ({ resource, method = 'POST', data = {} }) =>
       'Content-Type': 'application/json',
     },
     data,
-  }).catch(console.log);
+  }).catch(
+    function (error) {
+      console.log(`Error getting ${resource}`)
+    }
+  );
 
 const getClickupTicketName = async (taskId, isCustom) => {
   const resource = getTaskResource({ taskId, isCustom }, "")
 
-  const {
-    data: { name },
-  } = await clickupRequest({
+  const response = await clickupRequest({
     resource,
     method: 'GET',
   });
+  const name = response?.data?.name ?? undefined
   return name
 }
 
@@ -67,17 +70,25 @@ const addClickupRefComment = async (taskId, isCustom) => {
 
 const parallelRequests = (tasks = [], req) => {
   if (tasks.length === 0) {
-    return;
+    return[];
   }
 
   return Promise.all(tasks.map(req));
 };
 
-const checkAndUpdateClickupIssues = () => {
+const checkAndUpdateClickupIssues = async () => {
   const source = [danger.github.pr.title, danger.github.pr.body].join(' ');
   const tasks = getTasks(source);
+  const allTasks = await parallelRequests(tasks, async ({ taskId, isCustom }) => {
+    return {
+      taskId: taskId,
+      isCustom: isCustom,
+      name: await getClickupTicketName(taskId, isCustom)
+    }
+   });
 
-  if (tasks.length === 0) {
+  const tasksWithName = allTasks.filter(({ name }) => name);
+  if (tasksWithName.length === 0) {
     fail(
       '<b>Please add the ClickUp issue key to the PR e.g.: #28zfr1a or #DATAENG-98</b>\n' +
       '(remember to add hash)\n\n' +
@@ -89,24 +100,17 @@ const checkAndUpdateClickupIssues = () => {
     return;
   }
 
-  parallelRequests(tasks, async ({ taskId, isCustom }) => {
-    return {
-      taskId: taskId,
-      name: await getClickupTicketName(taskId, isCustom)
-    }
-  }).then(tasksWithName => {
-    message(
-      'ClickUp ticket(s) related to this PR:\n' +
-      tasksWithName
-        .map(
-          ({ taskId, name }) =>
-            `+ :link: <a href="https://app.clickup.com/t/${CLICKUP_TEAM_ID}/${taskId}">${name} [#${taskId}]</a>`
-        )
-        .join('\n')
-    );
-  });
+  message(
+    'ClickUp ticket(s) related to this PR:\n' +
+    tasksWithName
+      .map(
+        ({ taskId, name }) =>
+          `+ :link: <a href="https://app.clickup.com/t/${CLICKUP_TEAM_ID}/${taskId}">${name} [#${taskId}]</a>`
+      )
+      .join('\n')
+  );
 
-  parallelRequests(tasks, async ({ taskId, isCustom }) => {
+  parallelRequests(tasksWithName, async ({ taskId, isCustom }) => {
     addClickupRefComment(taskId, isCustom);
   });
 };
