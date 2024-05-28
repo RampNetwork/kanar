@@ -28,8 +28,7 @@ const getClickupTicketName = async (taskId, isCustom) => {
     resource,
     method: 'GET',
   });
-  const name = response?.data?.name ?? undefined
-  return name
+  return response?.data?.name ?? undefined
 }
 
 const getTaskResource = ({ taskId, isCustom }, field = '') => {
