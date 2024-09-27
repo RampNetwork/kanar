@@ -78,18 +78,9 @@ const parallelRequests = (tasks = [], req) => {
 const checkAndUpdateClickupIssues = async () => {
   const source = [danger.github.pr.title, danger.github.pr.body].join(' ');
   const tasks = getTasks(source);
-  const allTasks = await parallelRequests(tasks, async ({ taskId, isCustom }) => {
-    return {
-      taskId: taskId,
-      isCustom: isCustom,
-      name: await getClickupTicketName(taskId, isCustom)
-    }
-   });
-
-  const tasksWithName = allTasks.filter(({ name }) => name);
-  if (tasksWithName.length === 0) {
+  if (tasks.length === 0) {
     fail(
-      '<b>Please add the ClickUp issue key to the PR e.g.: #28zfr1a or #DATAENG-98</b>\n' +
+      '<b>Please add the issue key to the PR e.g.: #28zfr1a or #DATAENG-98</b>\n' +
       '(remember to add hash)\n\n' +
       '<i>You can find ticket key eg. in the last part of URL when ticket is viewed in the browser eg.:\n' +
       'URL: https://app.clickup.com/t/28zfr1a -> ticket issue key: 28zfr1a -> what should be added to PR: #28zfr1a\n' +
@@ -100,18 +91,14 @@ const checkAndUpdateClickupIssues = async () => {
   }
 
   message(
-    'ClickUp ticket(s) related to this PR:\n' +
-    tasksWithName
+    'Ticket(s) related to this PR:\n\n' +
+    tasks
       .map(
-        ({ taskId, name }) =>
-          `+ :link: <a href="https://app.clickup.com/t/${CLICKUP_TEAM_ID}/${taskId}">${name} [#${taskId}]</a>`
+        ({ taskId }) =>
+          `- :link: #${taskId}`
       )
       .join('\n')
   );
-
-  parallelRequests(tasksWithName, async ({ taskId, isCustom }) => {
-    addClickupRefComment(taskId, isCustom);
-  });
 };
 
 checkAndUpdateClickupIssues();
