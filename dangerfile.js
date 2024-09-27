@@ -91,18 +91,14 @@ const checkAndUpdateClickupIssues = async () => {
   }
 
   message(
-    'Ticket(s) related to this PR:\n' +
+    'Ticket(s) related to this PR:\n\n' +
     tasks
       .map(
         ({ taskId }) =>
-          `+ :link: #${taskId} <a href="https://app.clickup.com/t/${CLICKUP_TEAM_ID}/${taskId}">ClickUp</a> <a href="https://rampnetwork.atlassian.net/browse/${taskId}">Jira</a>`
+          `- :link: #${taskId}`
       )
       .join('\n')
   );
-
-  parallelRequests(tasksWithName, async ({ taskId, isCustom }) => {
-    addClickupRefComment(taskId, isCustom);
-  });
 };
 
 checkAndUpdateClickupIssues();
