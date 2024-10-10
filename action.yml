@@ -1,4 +1,4 @@
-name: CliCop
+name: Kanark
 description: "Run DangerJS to check if the PR is has a valid Jira ticket reference"
 
 inputs:
