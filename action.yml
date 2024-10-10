@@ -29,4 +29,4 @@ runs:
         JIRA_TOKEN: ${{ inputs.jira_token }}
         JIRA_TOKEN_USER: ${{ inputs.jira_token_user }}
         NODE_PATH: ${{ github.action_path }}
-      run: npx danger -i Kanar --dangerfile ${{ github.action_path }}/dangerfile.js ci
+      run: npx danger -i Kanarek --dangerfile ${{ github.action_path }}/dangerfile.js ci
