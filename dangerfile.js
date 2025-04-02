@@ -16,7 +16,9 @@ const jiraRequest = async ({ resource, method = "GET", data = {} }) =>
     },
     data,
   }).catch((error) => {
-    console.error(`Error getting ${resource} - ${error}`);
+    console.error(
+      `::error::Error getting ${resource} - ${error} (${error.response.data})`
+    );
   });
 
 const getJiraIssueName = async (issueId) => {
@@ -57,6 +59,7 @@ const checkTasks = async () => {
       
       You can add more than one issue key in the PR title.</i>`
     );
+    console.error("::error::No Jira issue key found in PR title");
     return;
   }
 
@@ -68,6 +71,10 @@ const checkTasks = async () => {
           `+ :link: <a href="${JIRA_BASE_URL}/browse/${taskId}">${name} [#${taskId}]</a>`
       )
       .join("\n")}`
+  );
+  console.info(
+    "::notice::Jira issue(s) related to this PR:",
+    tasksWithName.map(({ name }) => name).join(", ")
   );
 };
 
