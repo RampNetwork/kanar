@@ -1,33 +1,43 @@
 const axios = require("axios");
+const axiosRetry = require("axios-retry");
 
 const getTasks = require("./lib/get-tasks.js");
+
+axiosRetry.default(axios, {
+  retries: 3,
+  retryDelay: axiosRetry.exponentialDelay,
+  retryCondition: (error) => {
+    if (axiosRetry.isNetworkOrIdempotentRequestError(error)) {
+      return true;
+    }
+    // Sometimes Jira API returns 403 when it's unavailable
+    if (error.response?.status === 403) {
+      return true;
+    }
+    return false;
+  },
+});
 
 const JIRA_BASE_URL = "https://rampnetwork.atlassian.net";
 const JIRA_API_URL = `${JIRA_BASE_URL}/rest/api/2`;
 
-const jiraRequest = async ({ resource, method = "GET", data = {} }) =>
-  axios({
-    method,
-    url: resource,
-    baseURL: JIRA_API_URL,
-    auth: {
-      username: process.env.JIRA_TOKEN_USER,
-      password: process.env.JIRA_TOKEN,
-    },
-    data,
-  }).catch((error) => {
-    console.error(
-      `::error::Error getting ${resource} - ${error} (${error.response.data})`
-    );
-  });
-
 const getJiraIssueName = async (issueId) => {
   const resource = `/issue/${issueId}?fields=summary`;
 
-  const response = await jiraRequest({
-    resource,
-    method: "GET",
-  });
+  const response = await axios
+    .get(resource, {
+      baseURL: JIRA_API_URL,
+      auth: {
+        username: process.env.JIRA_TOKEN_USER,
+        password: process.env.JIRA_TOKEN,
+      },
+    })
+    .catch((error) => {
+      console.error(`::error::Request to ${resource} has failed - ${error}`);
+      console.log("::group::Response");
+      console.log(error.response.data);
+      console.log("::endgroup::");
+    });
   return response?.data?.fields?.summary ?? undefined;
 };
 
@@ -74,7 +84,7 @@ const checkTasks = async () => {
   );
   console.info(
     "::notice::Jira issue(s) related to this PR:",
-    tasksWithName.map(({ name }) => name).join(", ")
+    tasksWithName.map(({ taskId }) => taskId).join(", ")
   );
 };
 
