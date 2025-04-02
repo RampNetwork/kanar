@@ -16,7 +16,9 @@ const jiraRequest = async ({ resource, method = "GET", data = {} }) =>
     },
     data,
   }).catch((error) => {
-    console.error(`Error getting ${resource} - ${error}`);
+    console.error(
+      `Error getting ${resource} - ${error} (${error.response.data})`
+    );
   });
 
 const getJiraIssueName = async (issueId) => {
