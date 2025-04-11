@@ -61,14 +61,21 @@ const checkTasks = async () => {
 
   const tasksWithName = allTasks.filter(({ name }) => name);
   if (tasksWithName.length === 0) {
-    fail(
-      `<b>Please add the Jira issue key at the end of PR title e.g.: #DATA-98</b> (remember to add hash)
-      
-      <i>You can find issue key eg. in the last part of URL when issue is viewed in the browser eg.:
-      URL: ${JIRA_BASE_URL}/browse/DATA-98 -> issue key: DATA-98 -> what should be added to the PR title: #DATA-98
-      
-      You can add more than one issue key in the PR title.</i>`
-    );
+    fail(`
+      <p>
+        <b>Please add the Jira issue key at the end of PR title e.g.: #DATA-98</b> (remember to add hash)
+      </p>
+      <p>
+        <i>
+          You can find issue key eg. in the last part of URL when issue is viewed in the browser eg.:
+          URL: ${JIRA_BASE_URL}/browse/DATA-98 -> issue key: DATA-98 -> what should be added to the PR title: #DATA-98
+        </i>
+      </p>
+      <p>
+        <i>
+          You can add more than one issue key in the PR title.
+        </i>
+      </p>`);
     console.error("::error::No Jira issue key found in PR title");
     return;
   }
