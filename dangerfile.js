@@ -82,6 +82,7 @@ const checkTasks = async () => {
 
   message(
     `Jira issue(s) related to this PR:
+    
     ${tasksWithName
       .map(
         ({ taskId, name }) =>
