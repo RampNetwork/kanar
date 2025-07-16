@@ -82,13 +82,12 @@ const checkTasks = async () => {
 
   message(
     `Jira issue(s) related to this PR:
-    
-    ${tasksWithName
-      .map(
-        ({ taskId, name }) =>
-          `+ :link: <a href="${JIRA_BASE_URL}/browse/${taskId}">${name} [#${taskId}]</a>`
-      )
-      .join("\n")}`
+${tasksWithName
+  .map(
+    ({ taskId, name }) =>
+      `+ :link: <a href="${JIRA_BASE_URL}/browse/${taskId}">${name} [#${taskId}]</a>`
+  )
+  .join("\n")}`
   );
   console.info(
     "::notice::Jira issue(s) related to this PR:",
