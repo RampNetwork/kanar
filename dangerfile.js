@@ -51,7 +51,8 @@ const parallelRequests = (tasks, req) => {
 
 const checkTasks = async () => {
   const source = danger.github.pr.title;
-  const tasks = getTasks(source);
+  const author = danger.github.pr.user.login;
+  const tasks = getTasks(source, author);
   const allTasks = await parallelRequests(tasks, async ({ taskId }) => {
     return {
       taskId: taskId,
@@ -61,9 +62,13 @@ const checkTasks = async () => {
 
   const tasksWithName = allTasks.filter(({ name }) => name);
   if (tasksWithName.length === 0) {
+    const isDependabot = author === 'dependabot[bot]';
+    const positionText = isDependabot ? 'at the beginning' : 'at the end';
+    const exampleText = isDependabot ? '#DATA-98 Update package' : 'PR title #DATA-98';
+
     fail(`
       <p>
-        <b>Please add the Jira issue key at the end of PR title e.g.: #DATA-98</b> (remember to add hash)
+        <b>Please add the Jira issue key ${positionText} of PR title e.g.: ${exampleText}</b> (remember to add hash)
       </p>
       <p>
         <i>
