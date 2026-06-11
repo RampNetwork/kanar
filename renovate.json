@@ -1,6 +1,56 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "labels": ["renovate"],
+  "commitMessageLowerCase": "never",
+  "minimumReleaseAge": "7 days",
+  "osvVulnerabilityAlerts": false,
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "branchTopic": "{{{replace '/' '-' packageName}}}-vulnerability",
+    "commitMessageSuffix": " #PLTM-1362",
+    "addLabels": ["security", "renovate"],
+    "semanticCommitType": "fix",
+    "semanticCommitScope": "deps",
+    "packageRules": [
+      {
+        "description": "Skip vulnerability with LOW severity",
+        "matchJsonata": ["vulnerabilitySeverity = 'LOW'"],
+        "enabled": false
+      }
+    ]
+  },
+  "prConcurrentLimit": 10,
+  "prHourlyLimit": 5,
+  "packageRules": [
+    {
+      "description": "All npm updates (#PLTM-1362)",
+      "matchManagers": ["npm"],
+      "addLabels": ["npm"],
+      "commitMessageSuffix": " #PLTM-1362",
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "deps"
+    },
+    {
+      "description": "All GitHub Actions updates (#PLTM-1361)",
+      "matchManagers": ["github-actions"],
+      "addLabels": ["cicd"],
+      "commitMessageSuffix": " #PLTM-1361",
+      "semanticCommitType": "chore",
+      "semanticCommitScope": "cicd"
+    },
+    {
+      "description": "Group patch/minor/digest updates per package",
+      "matchUpdateTypes": ["patch", "minor", "digest"],
+      "groupName": "{{{depName}}}"
+    },
+    {
+      "description": "Require dashboard approval for major updates (not grouped)",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    }
   ]
 }
