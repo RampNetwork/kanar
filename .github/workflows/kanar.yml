@@ -14,7 +14,7 @@ jobs:
   kanar:
     runs-on: ubuntu-latest
     steps:
-      - uses: RampNetwork/kanar@v2
+      - uses: RampNetwork/kanar@2e8718c3a1400156d59376bcdf678fa34e6e3b32 # v2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }} # this is passed automatically https://docs.github.com/en/actions/security-guides/automatic-token-authentication
           jira_token: ${{ secrets.JIRA_TOKEN }}
